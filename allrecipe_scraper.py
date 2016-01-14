@@ -36,7 +36,15 @@ def recipe_index_scraper(section_url):
 	return cleanLinks
 
 def recipe_page_scraper(recipe_link):
+	return "deadass"
 
+def link_parser(link):
+	stripped_link = link[29:35]
+
+	if stripped_link[len(stripped_link) - 1] == '/':
+		return stripped_link[:(len(stripped_link) - 1)]
+	else:
+		return stripped_link
 
 def main():
 	# Open the pickled LIST of recipe indices
@@ -44,7 +52,14 @@ def main():
 	with open(SITEMAP_PICKLE, 'rb') as f:
 		index_links = pickle.load(f)
 
+	full_index_links = []
+	for link in index_links:
+		new_link = BASE_URL + link
+		full_index_links.append(new_link)
 
+	recipe_links = []
+	for link in full_index_links:
+		ind_recp_links = recipe_index_scraper(link)
 
 	# Open the pickled LIST of recipe links
 	recipe_links = []
