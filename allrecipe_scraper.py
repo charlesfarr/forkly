@@ -9,15 +9,22 @@ SITEMAP_URL = "http://dish.allrecipes.com/faq-sitemap/"
 SITEMAP_PICKLE = "allrecipes_sitemap.pickle"
 RECIPE_LINKS_PICKLE = 'allrecipes_recipes.pickle'
 RECIPE_INGREDIENTS_PICKLE = 'recipe_ingredients.pickle'
+PATH_TO_CHROMEDRIVER = '/Users/charlesfarr/desktop/chromedriver' #Update
 
 def sitemap_scraper(sitemap_url):
+	## BeautifulSoup setup
 	html = urlopen(sitemap_url).read()
 	soup = BeautifulSoup(html,"lxml")
+
+	#empty list for collecting links
 	links = []
+
+	#filter all links - append only those that are indexes of recipes
 	for link in soup.find_all('a'):
 		if '/recipes/' in unicode(link):
-			links.append(unicode(link.get('href')))
+			links.append(link.get('href').encode('ascii','ignore'))
 
+	# dump to pickle file of indexes
 	with open(SITEMAP_PICKLE,'wb') as f:
 		pickle.dump(links, f, pickle.HIGHEST_PROTOCOL)
 
@@ -31,9 +38,32 @@ def recipe_index_scraper(section_url):
 	links = []
 	for link in soup.find_all('a'):
 		if '/recipe/'in unicode(link):
-			links.append(BASE_URL + unicode(link.get('href')))
+			links.append(BASE_URL + link.get('href').encode('ascii','ignore'))
+
 	cleanLinks = list(set(links))
 	return cleanLinks
+
+	############ Taken from NYT Scraper - need to figure out how to redirect same browser window
+	# browser = webdriver.Chrome(executable_path = PATH_TO_CHROMEDRIVER)
+	# browser.get(search_results)
+	
+	# soup = BeautifulSoup(browser.page_source,'lxml')
+	# results = soup.find('div', class_='searchResults')
+	# thumbs = results.find_all('li')
+	
+	# article_links = []
+	# #article_authors = []
+
+	# for thumb in thumbs:
+	# 	#author = thumb.find('span',class_='byline').contents
+	# 	ele = thumb.find('div', class_="element2")
+	# 	link = ele.find('a').get('href')
+
+	# 	article_links.append(str(link))
+	# 	#article_authors.append(str(author))
+
+	browser.close()
+	return article_links #, article_authors
 
 def recipe_page_scraper(recipe_link):
 	return "deadass"
