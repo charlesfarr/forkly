@@ -1,0 +1,3 @@
+rootProject.name = 'forklyapp'
+
+include ':app'
